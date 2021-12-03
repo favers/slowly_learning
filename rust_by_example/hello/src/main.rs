@@ -8,7 +8,9 @@ fn main() {
     // 各种注释
     // comments();
     // 格式化输出
-    format_log();
+    // format_log();
+    // debug 输出 {:?} 或者 {:#?}
+    debug_print();
 }
 
 fn comments() {
@@ -71,4 +73,45 @@ fn format_log() {
 
     let pi = 3.141592;
     println!("Pi is roughly {1:.0$}", 3, pi);
+}
+
+fn debug_print() {
+    // 这个结构体不能使用 `fmt::Display` 或 `fmt::Debug` 来进行打印。
+    struct UnPrintable(i32);
+
+    // `derive` 属性会自动创建所需的实现，使这个 `struct` 能使用 `fmt::Debug` 打印。
+    #[derive(Debug)]
+    struct DebugPrintable(i32);
+
+    // println!("test {}", UnPrintable(1));
+    println!("DebugPrintable {:?}", DebugPrintable(1));
+
+    // 推导 `Structure` 的 `fmt::Debug` 实现。
+    // `Structure` 是一个包含单个 `i32` 的结构体。
+    #[derive(Debug)]
+    struct Structure(i32);
+
+    // 将 `Structure` 放到结构体 `Deep` 中。然后使 `Deep` 也能够打印。
+    #[derive(Debug)]
+    struct Deep(Structure);
+
+    // `Structure` 也可以打印！
+    println!("Now {:?} will print!", Structure(3));
+
+    // 使用 `derive` 的一个问题是不能控制输出的形式。
+    // 假如我只想展示一个 `7` 怎么办？
+    println!("Now {:?} will print!", Deep(Structure(7)));
+
+    #[derive(Debug)]
+    struct Person<'a> {
+        name: &'a str,
+        age: u8,
+    }
+
+    let name = "Peter";
+    let age = 27;
+    let peter = Person { name, age };
+
+    // 美化打印
+    println!("{:#?}", peter);
 }
