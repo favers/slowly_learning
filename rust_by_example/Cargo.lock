@@ -3,6 +3,10 @@
 version = 3
 
 [[package]]
+name = "custom_types"
+version = "0.1.0"
+
+[[package]]
 name = "hello"
 version = "0.1.0"
 
