@@ -1,3 +1,4 @@
+use std::fmt;
 // 主函数
 fn main() {
     // 将文本打印到命令行
@@ -10,7 +11,11 @@ fn main() {
     // 格式化输出
     // format_log();
     // debug 输出 {:?} 或者 {:#?}
-    debug_print();
+    // debug_print();
+    // display 输出 {}
+    display_print();
+    display_min_max();
+    display_complex();
 }
 
 fn comments() {
@@ -114,4 +119,77 @@ fn debug_print() {
 
     // 美化打印
     println!("{:#?}", peter);
+}
+
+fn display_print() {
+    // 定义一个结构体，咱们会为它实现 `fmt::Display`。以下是个简单的元组结构体
+    // `Structure`，包含一个 `i32` 元素。
+    struct Structure(i32);
+
+    // 为了使用 `{}` 标记，必须手动为类型实现 `fmt::Display` trait。
+    impl fmt::Display for Structure {
+        // 这个 trait 要求 `fmt` 使用与下面的函数完全一致的函数签名
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            // 仅将 self 的第一个元素写入到给定的输出流 `f`。返回 `fmt:Result`，此
+            // 结果表明操作成功或失败。注意 `write!` 的用法和 `println!` 很相似。
+            write!(f, "{}", self.0)
+        }
+    }
+
+    println!("Structure {}", Structure(123));
+}
+
+fn display_min_max() {
+    // 带有两个数字的结构体。推导出 `Debug`，以便与 `Display` 的输出进行比较。
+    #[derive(Debug)]
+    struct MinMax(i64, i64);
+    println!("debug {:?}", MinMax(1, 2));
+
+    // 实现 `MinMax` 的 `Display`。
+    impl fmt::Display for MinMax {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            // 使用 `self.number` 来表示各个数据。
+            write!(f, "({}, {})", self.0, self.1)
+        }
+    }
+    println!("display {}", MinMax(2, 4));
+
+    // 为了比较，定义一个含有具名字段的结构体。
+    #[derive(Debug)]
+    struct Point2D {
+        x: f64,
+        y: f64,
+    }
+
+    impl fmt::Display for Point2D {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            // 自定义格式，使得仅显示 `x` 和 `y` 的值。
+            write!(f, "x: {}, y: {}", self.x, self.y)
+        }
+    }
+
+    let point = Point2D { x: 1.0, y: 2.0 };
+    println!("{:?}", point);
+    println!("{}", point);
+    // println!("{:b}", point);
+}
+
+fn display_complex() {
+    #[derive(Debug)]
+    struct Complex {
+        real: f32,
+        imag: f32,
+    }
+    let complex = Complex {
+        real: 3.3,
+        imag: 7.2,
+    };
+    println!("{:?}", complex);
+
+    impl fmt::Display for Complex {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "{} + {}!", self.real, self.imag)
+        }
+    }
+    println!("{}", complex);
 }
