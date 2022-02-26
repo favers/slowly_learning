@@ -1,6 +1,6 @@
 mod opcode;
 
-use opcode::Code;
+use opcode::{Code, Opcode};
 use std::io::{stdin, stdout, Read, Write};
 use std::{env, fs};
 
@@ -24,37 +24,37 @@ impl Interpreter {
                 break;
             }
             match code.instrs[pc] {
-                opcode::Opcode::SHR => {
+                Opcode::SHR => {
                     sp += 1;
                     if sp == self.stack.len() {
                         self.stack.push(0);
                     }
                 }
-                opcode::Opcode::SHL => {
+                Opcode::SHL => {
                     if sp != 0 {
                         sp -= 1;
                     }
                 }
-                opcode::Opcode::ADD => {
+                Opcode::ADD => {
                     self.stack[sp] = self.stack[sp].overflowing_add(1).0;
                 }
-                opcode::Opcode::SUB => {
+                Opcode::SUB => {
                     self.stack[sp] = self.stack[sp].overflowing_sub(1).0;
                 }
-                opcode::Opcode::PUTCHAR => {
+                Opcode::PUTCHAR => {
                     stdout().write_all(&[self.stack[sp]])?;
                 }
-                opcode::Opcode::GETCHAR => {
+                Opcode::GETCHAR => {
                     let mut buf = vec![0; 1];
                     stdin().read_exact(&mut buf)?;
                     self.stack[sp] = buf[0];
                 }
-                opcode::Opcode::LB => {
+                Opcode::LB => {
                     if self.stack[sp] == 0x00 {
                         pc = code.jtable[&pc];
                     }
                 }
-                opcode::Opcode::RB => {
+                Opcode::RB => {
                     if self.stack[sp] != 0x00 {
                         pc = code.jtable[&pc];
                     }
